@@ -30,7 +30,7 @@ def get_groq_response(conversation_history):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "openai/gpt-oss-20b",  # Sabitlendi ve güncellendi
+        "model": "openai/gpt-oss-20b",
         "messages": conversation_history,
         "temperature": 0.7,
         "max_tokens": 500
@@ -53,14 +53,14 @@ async def on_ready():
     
     activity = discord.Activity(
         type=discord.ActivityType.playing, 
-        name="/aslanlar AI System",  
+        name="/Mkaaı AI System",  
         details="Groq AI Aktif", 
         state="Destege hazir.",
         timestamps={'start': baslangic_zamani}
     )
     
     await bot.change_presence(activity=activity)
-    print("ASLANLAR AI SYSTEM aktivitesi ve sayac basariyla yuklendi.")
+    print("MKAAI AI SYSTEM aktivitesi ve sayac basariyla yuklendi.")
 
 async def send_typing_simulation(channel, text):
     async with channel.typing():
@@ -102,8 +102,9 @@ async def on_message(message):
         incoming_text = message.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
         
         if incoming_text:
+            # Sistem talimatı (Adı Mkaaı olarak sabitlendi)
             messages_history = [
-                {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Kısa, net ve samimi konuş. Kendine sorulan sorulara önceki mesajların bağlamını dikkate alarak mantıklı yanıtlar ver."}
+                {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Adın kesinlikle Mkaaı'dır. Kime sorulursa sorulsun adının Mkaaı olduğunu söylersin. Kısa, net ve samimi konuşursun. Kendine sorulan sorulara önceki mesajların bağlamını dikkate alarak mantıklı yanıtlar verirsin."}
             ]
             
             if message.reference and message.reference.message_id:
@@ -137,14 +138,14 @@ async def help_command(ctx):
     help_text = (
         "```ansi\n"
         "\u001b[1;36m========================================\u001b[0m\n"
-        "\u001b[1;32m       ASLANLAR AI SYSTEM - YARDIM      \u001b[0m\n"
+        "\u001b[1;32m         MKAAI AI SYSTEM - YARDIM       \u001b[0m\n"
         "\u001b[1;36m========================================\u001b[0m\n"
         "```\n"
         f"• **Sistem Durumu:** {pause_status}\n"
         f"• **Özel Mesaj (DM):** {dm_status}\n"
         f"• **Kanal Durumu:** {channel_status}\n\n"
         "__**Yapay Zeka Etkileşimi:**__\n"
-        "> Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde Groq otomatik olarak yanıt verir. Yanıt zincirlerini takip ederek bağlamı anlar.\n\n"
+        "> Adım Mkaaı! Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde yanıt verir, zincir bağlamını takip ederim.\n\n"
         "__**Yönetim Komutları:**__\n"
         "• `!toggleactive` ➔ Bulunduğunuz kanalı yapay zeka için açar veya kapatır.\n"
         "• `!toggledm` ➔ Özel mesajlarda botun yanıt verme durumunu değiştirir.\n"
@@ -162,7 +163,7 @@ async def pause_bot(ctx):
     global is_paused
     is_paused = not is_paused
     status = "**duraklatıldı**" if is_paused else "**devam ediyor**"
-    await ctx.message.edit(content=f"⚙️ Groq AI yanıtları şu an: {status}")
+    await ctx.message.edit(content=f"⚙️ Mkaaı AI yanıtları şu an: {status}")
 
 @bot.command(name="ping")
 async def ping_command(ctx):
