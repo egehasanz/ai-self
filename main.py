@@ -30,7 +30,7 @@ def get_groq_response(prompt):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama-3.3-70b-versatile",
+        "model": "llama-3.1-8b-instant",  # Kararli ve sorunsuz calisan model ile guncellendi
         "messages": [
             {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Kısa, net ve samimi konuş."},
             {"role": "user", "content": prompt}
@@ -57,7 +57,7 @@ async def on_ready():
     activity = discord.Activity(
         type=discord.ActivityType.playing, 
         name="/aslanlar AI System",  
-        details="Groq Llama-3.3 Aktif", 
+        details="Groq Llama-3.1 Aktif", 
         state="Destege hazir.",
         timestamps={'start': baslangic_zamani}
     )
@@ -130,7 +130,7 @@ async def help_command(ctx):
         f"• **Özel Mesaj (DM):** {dm_status}\n"
         f"• **Kanal Durumu:** {channel_status}\n\n"
         "__**Yapay Zeka Etkileşimi:**__\n"
-        "> Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde Groq (Llama-3.3) otomatik olarak yanıt verir.\n\n"
+        "> Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde Groq otomatik olarak yanıt verir.\n\n"
         "__**Yönetim Komutları:**__\n"
         "• `!toggleactive` ➔ Bulunduğunuz kanalı yapay zeka için açar veya kapatır.\n"
         "• `!toggledm` ➔ Özel mesajlarda botun yanıt verme durumunu değiştirir.\n"
