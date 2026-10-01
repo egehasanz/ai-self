@@ -30,7 +30,7 @@ def get_groq_response(prompt):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama-3.1-8b-instant",  # Kararli ve sorunsuz calisan model ile guncellendi
+        "model": "openai/gpt-oss-20b",  # Güncel ve aktif model ile değiştirildi
         "messages": [
             {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Kısa, net ve samimi konuş."},
             {"role": "user", "content": prompt}
@@ -57,7 +57,7 @@ async def on_ready():
     activity = discord.Activity(
         type=discord.ActivityType.playing, 
         name="/aslanlar AI System",  
-        details="Groq Llama-3.1 Aktif", 
+        details="Groq AI Aktif", 
         state="Destege hazir.",
         timestamps={'start': baslangic_zamani}
     )
