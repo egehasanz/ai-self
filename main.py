@@ -23,18 +23,15 @@ bot = commands.Bot(command_prefix=PREFIX, self_bot=True, help_command=None)
 async def globally_block_others(ctx):
     return ctx.author.id == bot.user.id
 
-def get_groq_response(prompt):
+def get_groq_response(conversation_history):
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "openai/gpt-oss-20b",  # Güncel ve aktif model ile değiştirildi
-        "messages": [
-            {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Kısa, net ve samimi konuş."},
-            {"role": "user", "content": prompt}
-        ],
+        "model": "llama-3.3-70b-versatile",  # Güncel ve kararlı model
+        "messages": conversation_history,
         "temperature": 0.7,
         "max_tokens": 500
     }
@@ -57,7 +54,7 @@ async def on_ready():
     activity = discord.Activity(
         type=discord.ActivityType.playing, 
         name="/aslanlar AI System",  
-        details="Groq AI Aktif", 
+        details="Groq Llama-3.3 Aktif", 
         state="Destege hazir.",
         timestamps={'start': baslangic_zamani}
     )
@@ -105,7 +102,28 @@ async def on_message(message):
         incoming_text = message.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
         
         if incoming_text:
-            ai_reply = get_groq_response(incoming_text)
+            # Sohbet akışını oluştur (Zincir bağlamı)
+            messages_history = [
+                {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Kısa, net ve samimi konuş. Kendine sorulan sorulara önceki mesajların bağlamını dikkate alarak mantıklı yanıtlar ver."}
+            ]
+            
+            # Eğer bir mesaja yanıt veriliyorsa (reply zinciri), üst mesajı geçmişe ekle
+            if message.reference and message.reference.message_id:
+                try:
+                    ref_msg = await message.channel.fetch_message(message.reference.message_id)
+                    if ref_msg:
+                        # Eğer üst mesaj botun kendisiyse assistant, başkasıysa user rolü ver
+                        role = "assistant" if ref_msg.author.id == bot.user.id else "user"
+                        ref_text = ref_msg.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
+                        if ref_text:
+                            messages_history.append({"role": role, "content": ref_text})
+                except:
+                    pass
+            
+            # En son gelen güncel mesajı ekle
+            messages_history.append({"role": "user", "content": incoming_text})
+
+            ai_reply = get_groq_response(messages_history)
             await send_typing_simulation(message.channel, ai_reply)
             await message.reply(ai_reply, mention_author=True)
 
@@ -130,7 +148,7 @@ async def help_command(ctx):
         f"• **Özel Mesaj (DM):** {dm_status}\n"
         f"• **Kanal Durumu:** {channel_status}\n\n"
         "__**Yapay Zeka Etkileşimi:**__\n"
-        "> Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde Groq otomatik olarak yanıt verir.\n\n"
+        "> Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde Groq otomatik olarak yanıt verir. Yanıt zincirlerini takip ederek bağlamı anlar.\n\n"
         "__**Yönetim Komutları:**__\n"
         "• `!toggleactive` ➔ Bulunduğunuz kanalı yapay zeka için açar veya kapatır.\n"
         "• `!toggledm` ➔ Özel mesajlarda botun yanıt verme durumunu değiştirir.\n"
