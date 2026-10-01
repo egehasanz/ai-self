@@ -18,6 +18,11 @@ SPAM_COOLDOWN = 3.0
 
 bot = commands.Bot(command_prefix=PREFIX, self_bot=True, help_command=None)
 
+# --- GUVENLIK KONTROLU (Sadece senin komut calistirmani saglar) ---
+@bot.check
+async def globally_block_others(ctx):
+    return ctx.author.id == bot.user.id
+
 def get_groq_response(prompt):
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
@@ -70,7 +75,9 @@ async def send_typing_simulation(channel, text):
 async def on_message(message):
     global is_paused
     
+    # Kendi mesajlarımızı yoksay (AI yanıt döngüsünü engellemek için)
     if message.author.id == bot.user.id:
+        await bot.process_commands(message)
         return
 
     if is_paused:
@@ -96,6 +103,7 @@ async def on_message(message):
             return
     last_message_times[author_id] = current_time
 
+    # Başkaları sana yazdığında veya etiketlediğinde Groq devreye girer
     if bot.user.mentioned_in(message) or message.reference:
         incoming_text = message.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
         
@@ -105,6 +113,8 @@ async def on_message(message):
             await message.reply(ai_reply, mention_author=True)
 
     await bot.process_commands(message)
+
+# --- YONETIM KOMUTLARI (Sadece senin hesabınla çalışır) ---
 
 @bot.command(name="yardim", aliases=["help"])
 async def help_command(ctx):
@@ -118,7 +128,7 @@ async def help_command(ctx):
         f"Sistem Durumu: {pause_status} | DM Durumu: {dm_status}\n"
         f"Bu Kanalin Durumu: {channel_status}\n\n"
         "Yapay Zeka Etkilesimi:\n"
-        "- Botun bulundugu aktif kanallarda veya DM'lerde size etiket atildiginda veya mesajiniza yanit verildiginde Groq otomatik olarak yanit verir.\n\n"
+        "- Baskalari size etiket attiginda veya mesajiniza yanit verildiginde Groq otomatik olarak yanit verir.\n\n"
         "Yonetim Komutlari:\n"
         "- !toggleactive : Bulundugunuz kanali yapay zeka icin acar veya kapatir.\n"
         "- !toggledm : Ozel mesajlarda botun yanit verme durumunu degistirir.\n"
