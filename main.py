@@ -44,7 +44,7 @@ def get_groq_response(prompt):
         if response.status_code == 200:
             return response.json()["choices"][0]["message"]["content"].strip()
         else:
-            return f"API Hatasi (Kod: {response.status_code})"
+            return f"API Hatasi (Kod: {response.status_code} - {response.text})"
     except Exception as e:
         return f"Baglanti Hatasi: {e}"
 
