@@ -30,7 +30,7 @@ def get_groq_response(conversation_history):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "openai/gpt-oss-20b",
+        "model": "openai/gpt-oss-20b",  # Her zaman kullandığımız 20'li model sabitlendi
         "messages": conversation_history,
         "temperature": 0.7,
         "max_tokens": 500
@@ -51,7 +51,6 @@ async def on_ready():
     
     baslangic_zamani = int(time.time()) - 259200
     
-    # Rich Presence güncellendi
     activity = discord.Activity(
         type=discord.ActivityType.playing, 
         name="/aslanlar AI System",  
@@ -61,7 +60,7 @@ async def on_ready():
     )
     
     await bot.change_presence(activity=activity)
-    print("Rich Presence başarıyla güncellendi.")
+    print("ASLANLAR AI SYSTEM aktivitesi başarıyla yüklendi.")
 
 async def send_typing_simulation(channel, text):
     async with channel.typing():
@@ -145,7 +144,7 @@ async def help_command(ctx):
         f"• **Özel Mesaj (DM):** {dm_status}\n"
         f"• **Kanal Durumu:** {channel_status}\n\n"
         "__**Yapay Zeka Etkileşimi:**__\n"
-        "> Adım Mkaaı! Etiketlendiğimed veya yanıt verildiğinde zincir bağlamına göre yanıt veririm.\n\n"
+        "> Adım Mkaaı! Etiketlendiğinde veya yanıt verildiğinde zincir bağlamına göre yanıt veririm.\n\n"
         "__**Yönetim Komutları:**__\n"
         "• `!toggleactive` ➔ Bulunduğunuz kanalı yapay zeka için açar veya kapatır.\n"
         "• `!toggledm` ➔ Özel mesajlarda botun yanıt verme durumunu değiştirir.\n"
