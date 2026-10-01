@@ -55,7 +55,7 @@ async def on_ready():
         name="/aslanlar AI System",  
         details="Groq Llama-3.3 Aktif", 
         state="Destege hazir.",
-        start=baslangic_zamani
+        timestamps={'start': baslangic_zamani}
     )
     
     await bot.change_presence(activity=activity)
