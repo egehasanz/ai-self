@@ -51,16 +51,17 @@ async def on_ready():
     
     baslangic_zamani = int(time.time()) - 259200
     
+    # Rich Presence güncellendi
     activity = discord.Activity(
         type=discord.ActivityType.playing, 
-        name="/Mkaaı AI System",  
+        name="/aslanlar AI System",  
         details="Groq AI Aktif", 
-        state="Destege hazir.",
+        state="kamigawa",
         timestamps={'start': baslangic_zamani}
     )
     
     await bot.change_presence(activity=activity)
-    print("MKAAI AI SYSTEM aktivitesi ve sayac basariyla yuklendi.")
+    print("Rich Presence başarıyla güncellendi.")
 
 async def send_typing_simulation(channel, text):
     async with channel.typing():
@@ -102,9 +103,8 @@ async def on_message(message):
         incoming_text = message.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
         
         if incoming_text:
-            # Sistem talimatı (Adı Mkaaı olarak sabitlendi)
             messages_history = [
-                {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Adın kesinlikle Mkaaı'dır. Kime sorulursa sorulsun adının Mkaaı olduğunu söylersin. Kısa, net ve samimi konuşursun. Kendine sorulan sorulara önceki mesajların bağlamını dikkate alarak mantıklı yanıtlar verirsin."}
+                {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden, samimi bir yapay zekasın. Adın kesinlikle Mkaaı'dır. Kime sorulursa sorulsun adının Mkaaı olduğunu söylersin. Kısa, net konuşur ve önceki mesajların bağlamını dikkate alarak mantıklı yanıtlar verirsin."}
             ]
             
             if message.reference and message.reference.message_id:
@@ -145,7 +145,7 @@ async def help_command(ctx):
         f"• **Özel Mesaj (DM):** {dm_status}\n"
         f"• **Kanal Durumu:** {channel_status}\n\n"
         "__**Yapay Zeka Etkileşimi:**__\n"
-        "> Adım Mkaaı! Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde yanıt verir, zincir bağlamını takip ederim.\n\n"
+        "> Adım Mkaaı! Etiketlendiğimed veya yanıt verildiğinde zincir bağlamına göre yanıt veririm.\n\n"
         "__**Yönetim Komutları:**__\n"
         "• `!toggleactive` ➔ Bulunduğunuz kanalı yapay zeka için açar veya kapatır.\n"
         "• `!toggledm` ➔ Özel mesajlarda botun yanıt verme durumunu değiştirir.\n"
