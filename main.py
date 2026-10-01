@@ -52,7 +52,6 @@ def get_groq_response(prompt):
 async def on_ready():
     print(f'--- SELF-BOT & GROQ AKTIF: {bot.user.name} ---')
     
-    # 3 gun (259200 saniye) geriden baslayan sayac
     baslangic_zamani = int(time.time()) - 259200
     
     activity = discord.Activity(
@@ -75,7 +74,6 @@ async def send_typing_simulation(channel, text):
 async def on_message(message):
     global is_paused
     
-    # Kendi mesajlarımızı yoksay (AI yanıt döngüsünü engellemek için)
     if message.author.id == bot.user.id:
         await bot.process_commands(message)
         return
@@ -103,7 +101,6 @@ async def on_message(message):
             return
     last_message_times[author_id] = current_time
 
-    # Başkaları sana yazdığında veya etiketlediğinde Groq devreye girer
     if bot.user.mentioned_in(message) or message.reference:
         incoming_text = message.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
         
@@ -114,29 +111,34 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
-# --- YONETIM KOMUTLARI (Sadece senin hesabınla çalışır) ---
+# --- YONETIM KOMUTLARI (Markdown Destekli) ---
 
 @bot.command(name="yardim", aliases=["help"])
 async def help_command(ctx):
     is_active_channel = ctx.channel.id in active_channels
-    channel_status = "Aktif (Yanit Veriyor)" if is_active_channel else "Pasif (Komutlar Calisir)"
-    dm_status = "Acik" if dm_active else "Kapali"
-    pause_status = "Duraklatilmis" if is_paused else "Calisiyor"
+    channel_status = "**Aktif** (Yanıt Veriyor)" if is_active_channel else "**Pasif** (Komutlar Çalışır)"
+    dm_status = "**Açık**" if dm_active else "**Kapalı**"
+    pause_status = "**Duraklatıldı**" if is_paused else "**Çalışıyor**"
 
     help_text = (
-        "--- ASLANLAR AI SYSTEM - YARDIM MENUSU ---\n\n"
-        f"Sistem Durumu: {pause_status} | DM Durumu: {dm_status}\n"
-        f"Bu Kanalin Durumu: {channel_status}\n\n"
-        "Yapay Zeka Etkilesimi:\n"
-        "- Baskalari size etiket attiginda veya mesajiniza yanit verildiginde Groq otomatik olarak yanit verir.\n\n"
-        "Yonetim Komutlari:\n"
-        "- !toggleactive : Bulundugunuz kanali yapay zeka icin acar veya kapatir.\n"
-        "- !toggledm : Ozel mesajlarda botun yanit verme durumunu degistirir.\n"
-        "- !duraklat : Botun yapay zeka yanit uretmesini gecici olarak durdurur veya baslatir.\n"
-        "- !wipe [sayi] : Gonderdiginiz son mesajlardan belirtilen kadarini temizler.\n"
-        "- !ping : Botun gecikme suresini gosterir.\n"
-        "- !kapatma : Botu tamamen kapatir.\n\n"
-        "Anti-spam korumasi aktiftir (3 saniye bekleme suresi)."
+        "```ansi\n"
+        "\u001b[1;36m========================================\u001b[0m\n"
+        "\u001b[1;32m       ASLANLAR AI SYSTEM - YARDIM      \u001b[0m\n"
+        "\u001b[1;36m========================================\u001b[0m\n"
+        "```\n"
+        f"• **Sistem Durumu:** {pause_status}\n"
+        f"• **Özel Mesaj (DM):** {dm_status}\n"
+        f"• **Kanal Durumu:** {channel_status}\n\n"
+        "__**Yapay Zeka Etkileşimi:**__\n"
+        "> Başkaları size etiket attığında veya mesajınıza yanıt verildiğinde Groq (Llama-3.3) otomatik olarak yanıt verir.\n\n"
+        "__**Yönetim Komutları:**__\n"
+        "• `!toggleactive` ➔ Bulunduğunuz kanalı yapay zeka için açar veya kapatır.\n"
+        "• `!toggledm` ➔ Özel mesajlarda botun yanıt verme durumunu değiştirir.\n"
+        "• `!duraklat` ➔ Yapay zeka yanıt üretmesini geçici olarak durdurur/başlatır.\n"
+        "• `!wipe [sayı]` ➔ Gönderdiğiniz son mesajlardan belirtilen kadarını temizler.\n"
+        "• `!ping` ➔ Botun anlık gecikme süresini gösterir.\n"
+        "• `!kapatma` ➔ Botu tamamen kapatır.\n\n"
+        "-# *Anti-spam koruması aktiftir (3 saniye bekleme süresi).* "
     )
     
     await ctx.message.edit(content=help_text)
@@ -145,30 +147,30 @@ async def help_command(ctx):
 async def pause_bot(ctx):
     global is_paused
     is_paused = not is_paused
-    status = "duraklatildi" if is_paused else "devam ediyor"
-    await ctx.message.edit(content=f"Groq AI yanitlari su an: {status}")
+    status = "**duraklatıldı**" if is_paused else "**devam ediyor**"
+    await ctx.message.edit(content=f"⚙️ Groq AI yanıtları şu an: {status}")
 
 @bot.command(name="ping")
 async def ping_command(ctx):
     latency = round(bot.latency * 1000)
-    await ctx.message.edit(content=f"Pong! Gecikme: {latency}ms")
+    await ctx.message.edit(content=f"🏓 Pong! Gecikme süresi: **{latency}ms**")
 
 @bot.command(name="toggleactive")
 async def toggle_active(ctx, channel_id: int = None):
     target_id = channel_id if channel_id else ctx.channel.id
     if target_id in active_channels:
         active_channels.remove(target_id)
-        await ctx.message.edit(content=f"<#{target_id}> kanali aktif listesinden cikarildi.")
+        await ctx.message.edit(content=f"🔴 <#{target_id}> kanalı aktif listesinden çıkarıldı.")
     else:
         active_channels.add(target_id)
-        await ctx.message.edit(content=f"<#{target_id}> kanali aktif listesine eklendi.")
+        await ctx.message.edit(content=f"🟢 <#{target_id}> kanalı aktif listesine eklendi.")
 
 @bot.command(name="toggledm")
 async def toggle_dm(ctx):
     global dm_active
     dm_active = not dm_active
-    state = "acik" if dm_active else "kapali"
-    await ctx.message.edit(content=f"DM'lerde bot durumu: {state}")
+    state = "**açık**" if dm_active else "**kapalı**"
+    await ctx.message.edit(content=f"💬 Özel mesajlarda bot durumu: {state}")
 
 @bot.command(name="wipe")
 async def wipe_history(ctx, limit: int = 10):
@@ -182,16 +184,16 @@ async def wipe_history(ctx, limit: int = 10):
                     break
             except:
                 pass
-    await ctx.send(f"{deleted_count} mesaj temizlendi.", delete_after=5)
+    await ctx.send(f"🧹 **{deleted_count}** mesaj başarıyla temizlendi.", delete_after=5)
 
 @bot.command(name="kapatma")
 async def shutdown_bot(ctx):
-    await ctx.message.edit(content="Bot kapatiliyor...")
+    await ctx.message.edit(content="🛑 Bot kapatılıyor...")
     import sys
     sys.exit()
 
 if __name__ == "__main__":
     if not DISCORD_TOKEN:
-        print("HATA: DISCORD_TOKEN bulunamadi!")
+        print("HATA: DISCORD_TOKEN bulunamadı!")
     else:
         bot.run(DISCORD_TOKEN)
