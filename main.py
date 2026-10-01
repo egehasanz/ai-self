@@ -30,7 +30,7 @@ def get_groq_response(conversation_history):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama-3.3-70b-versatile",  # Güncel ve kararlı model
+        "model": "openai/gpt-oss-20b",  # Sabitlendi ve güncellendi
         "messages": conversation_history,
         "temperature": 0.7,
         "max_tokens": 500
@@ -54,7 +54,7 @@ async def on_ready():
     activity = discord.Activity(
         type=discord.ActivityType.playing, 
         name="/aslanlar AI System",  
-        details="Groq Llama-3.3 Aktif", 
+        details="Groq AI Aktif", 
         state="Destege hazir.",
         timestamps={'start': baslangic_zamani}
     )
@@ -102,17 +102,14 @@ async def on_message(message):
         incoming_text = message.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
         
         if incoming_text:
-            # Sohbet akışını oluştur (Zincir bağlamı)
             messages_history = [
                 {"role": "system", "content": "Sen Discord üzerinde normal bir kullanıcı gibi sohbet eden yardımsever bir yapay zekasın. Kısa, net ve samimi konuş. Kendine sorulan sorulara önceki mesajların bağlamını dikkate alarak mantıklı yanıtlar ver."}
             ]
             
-            # Eğer bir mesaja yanıt veriliyorsa (reply zinciri), üst mesajı geçmişe ekle
             if message.reference and message.reference.message_id:
                 try:
                     ref_msg = await message.channel.fetch_message(message.reference.message_id)
                     if ref_msg:
-                        # Eğer üst mesaj botun kendisiyse assistant, başkasıysa user rolü ver
                         role = "assistant" if ref_msg.author.id == bot.user.id else "user"
                         ref_text = ref_msg.content.replace(f'<@!{bot.user.id}>', '').replace(f'<@{bot.user.id}>', '').strip()
                         if ref_text:
@@ -120,7 +117,6 @@ async def on_message(message):
                 except:
                     pass
             
-            # En son gelen güncel mesajı ekle
             messages_history.append({"role": "user", "content": incoming_text})
 
             ai_reply = get_groq_response(messages_history)
